@@ -1,0 +1,196 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+@import "tw-animate-css";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-card-border: hsl(var(--card-border));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-popover-border: hsl(var(--popover-border));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-primary-border: var(--primary-border);
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-secondary-border: var(--secondary-border);
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-muted-border: var(--muted-border);
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-accent-border: var(--accent-border);
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-destructive-border: var(--destructive-border);
+
+  --font-sans: 'DM Sans', sans-serif;
+  --font-display: 'Outfit', sans-serif;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+}
+
+:root {
+  /* Slate & Indigo modern palette */
+  --background: 210 40% 98%;
+  --foreground: 222 47% 11%;
+  
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --card-border: 214 32% 91%;
+  
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --popover-border: 214 32% 91%;
+  
+  --primary: 243 75% 59%;
+  --primary-foreground: 210 40% 98%;
+  
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222 47% 11.2%;
+  
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  
+  --accent: 243 75% 59%;
+  --accent-foreground: 210 40% 98%;
+  
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 243 75% 59%;
+
+  --radius: 0.75rem;
+
+  /* Custom tree level colors */
+  --level-0: 243 75% 59%; /* Indigo */
+  --level-1: 173 80% 40%; /* Teal */
+  --level-2: 199 89% 48%; /* Sky */
+  --level-3: 32 95% 54%;  /* Orange */
+  --level-4: 330 81% 60%; /* Pink */
+}
+
+.dark {
+  --background: 222 47% 11%;
+  --foreground: 210 40% 98%;
+  
+  --card: 222 47% 11%;
+  --card-foreground: 210 40% 98%;
+  --card-border: 217 33% 17%;
+  
+  --popover: 222 47% 11%;
+  --popover-foreground: 210 40% 98%;
+  --popover-border: 217 33% 17%;
+  
+  --primary: 243 75% 65%;
+  --primary-foreground: 210 40% 98%;
+  
+  --secondary: 217 33% 17.5%;
+  --secondary-foreground: 210 40% 98%;
+  
+  --muted: 217 33% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+  
+  --accent: 243 75% 65%;
+  --accent-foreground: 210 40% 98%;
+  
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 217 33% 17.5%;
+  --input: 217 33% 17.5%;
+  --ring: 243 75% 65%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground overflow-hidden selection:bg-primary/20;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    @apply font-bold tracking-tight;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/30 rounded-full border-2 border-background;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/50;
+  }
+}
+
+.glass-panel {
+  @apply bg-background/80 backdrop-blur-xl border border-border shadow-2xl shadow-black/5;
+}
+
+.mindmap-node-shadow {
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 0 3px rgba(0,0,0,0.02);
+}
+
+.dark .mindmap-node-shadow {
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.2), 0 0 3px rgba(0,0,0,0.1);
+}
+
+/* AI Generation Gradient Text */
+@keyframes gradient-x {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.text-gradient {
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(to right, hsl(var(--primary)), #a855f7, hsl(var(--primary)));
+  background-size: 200% auto;
+  animation: gradient-x 3s linear infinite;
+}
+
+.animate-gradient-x {
+  animation: gradient-x 3s linear infinite;
+}
+
+/* Subtle dot grid for mind map background */
+.bg-dot-pattern {
+  background-image: radial-gradient(hsl(var(--muted-foreground) / 0.2) 1px, transparent 1px);
+  background-size: 24px 24px;
+}

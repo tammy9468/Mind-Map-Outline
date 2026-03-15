@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "AI思维导图工具"
+version = "1.0.0"
+id = "artifacts/mind-map"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+localPort = 22537
+name = "web"
+paths = ["/"]
+
+[services.development]
+run = "pnpm --filter @workspace/mind-map run dev"
+
+[services.env]
+PORT = "22537"
+BASE_PATH = "/"
+
+[services.production]
+build = ["pnpm", "--filter", "@workspace/mind-map", "run", "build"]
+publicDir = "artifacts/mind-map/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"

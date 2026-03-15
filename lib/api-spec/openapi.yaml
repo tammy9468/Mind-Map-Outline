@@ -1,6 +1,5 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
   description: API specification
@@ -10,6 +9,10 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: mindmap
+    description: Mind map and outline operations
+  - name: ai
+    description: AI generation operations
 paths:
   /healthz:
     get:
@@ -24,6 +27,176 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /mindmaps:
+    get:
+      operationId: listMindMaps
+      tags: [mindmap]
+      summary: List all mind maps
+      responses:
+        "200":
+          description: List of mind maps
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MindMapSummary"
+    post:
+      operationId: createMindMap
+      tags: [mindmap]
+      summary: Create a new mind map
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateMindMapBody"
+      responses:
+        "201":
+          description: Created mind map
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MindMap"
+  /mindmaps/{id}:
+    get:
+      operationId: getMindMap
+      tags: [mindmap]
+      summary: Get a mind map by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Mind map
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MindMap"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+    put:
+      operationId: updateMindMap
+      tags: [mindmap]
+      summary: Update a mind map
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateMindMapBody"
+      responses:
+        "200":
+          description: Updated mind map
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MindMap"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+    delete:
+      operationId: deleteMindMap
+      tags: [mindmap]
+      summary: Delete a mind map
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+  /mindmaps/{id}/nodes/{nodeId}:
+    put:
+      operationId: updateNode
+      tags: [mindmap]
+      summary: Update a specific node in a mind map
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: nodeId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateNodeBody"
+      responses:
+        "200":
+          description: Updated node
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MindMapNode"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+  /ai/generate:
+    post:
+      operationId: aiGenerateMindMap
+      tags: [ai]
+      summary: Generate a mind map structure from user input using AI (SSE stream)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AiGenerateBody"
+      responses:
+        "200":
+          description: SSE stream of generated mind map JSON
+          content:
+            text/event-stream: {}
+  /ai/expand-node:
+    post:
+      operationId: aiExpandNode
+      tags: [ai]
+      summary: AI expand a node with more details (SSE stream)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AiExpandNodeBody"
+      responses:
+        "200":
+          description: SSE stream with expanded node details
+          content:
+            text/event-stream: {}
 components:
   schemas:
     HealthStatus:
@@ -33,4 +206,138 @@ components:
           type: string
       required:
         - status
-
+    MindMapNode:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        content:
+          type: string
+          description: Rich text content for the detail page
+        color:
+          type: string
+        collapsed:
+          type: boolean
+        children:
+          type: array
+          items:
+            $ref: "#/components/schemas/MindMapNode"
+        x:
+          type: number
+          description: X position for mind map layout
+        y:
+          type: number
+          description: Y position for mind map layout
+      required:
+        - id
+        - title
+        - children
+    MindMap:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        root:
+          $ref: "#/components/schemas/MindMapNode"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - title
+        - root
+        - createdAt
+        - updatedAt
+    MindMapSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - title
+        - createdAt
+        - updatedAt
+    CreateMindMapBody:
+      type: object
+      properties:
+        title:
+          type: string
+        root:
+          $ref: "#/components/schemas/MindMapNode"
+      required:
+        - title
+        - root
+    UpdateMindMapBody:
+      type: object
+      properties:
+        title:
+          type: string
+        root:
+          $ref: "#/components/schemas/MindMapNode"
+    UpdateNodeBody:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        content:
+          type: string
+        color:
+          type: string
+        collapsed:
+          type: boolean
+    AiGenerateBody:
+      type: object
+      properties:
+        input:
+          type: string
+          description: User's raw idea or topic to generate mind map from
+        existingRoot:
+          $ref: "#/components/schemas/MindMapNode"
+          description: Existing mind map root to refine (optional)
+        instruction:
+          type: string
+          description: Additional instruction for AI refinement
+      required:
+        - input
+    AiExpandNodeBody:
+      type: object
+      properties:
+        nodeTitle:
+          type: string
+        nodeDescription:
+          type: string
+        parentContext:
+          type: string
+          description: Context from parent nodes
+        instruction:
+          type: string
+          description: Specific instruction for expansion
+      required:
+        - nodeTitle
+    ApiError:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error

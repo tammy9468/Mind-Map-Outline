@@ -8,3 +8,73 @@
 export interface HealthStatus {
   status: string;
 }
+
+export interface MindMapNode {
+  id: string;
+  title: string;
+  description?: string;
+  /** Rich text content for the detail page */
+  content?: string;
+  color?: string;
+  collapsed?: boolean;
+  children: MindMapNode[];
+  /** X position for mind map layout */
+  x?: number;
+  /** Y position for mind map layout */
+  y?: number;
+}
+
+export interface MindMap {
+  id: string;
+  title: string;
+  root: MindMapNode;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MindMapSummary {
+  id: string;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateMindMapBody {
+  title: string;
+  root: MindMapNode;
+}
+
+export interface UpdateMindMapBody {
+  title?: string;
+  root?: MindMapNode;
+}
+
+export interface UpdateNodeBody {
+  title?: string;
+  description?: string;
+  content?: string;
+  color?: string;
+  collapsed?: boolean;
+}
+
+export interface AiGenerateBody {
+  /** User's raw idea or topic to generate mind map from */
+  input: string;
+  /** Existing mind map root to refine (optional) */
+  existingRoot?: MindMapNode;
+  /** Additional instruction for AI refinement */
+  instruction?: string;
+}
+
+export interface AiExpandNodeBody {
+  nodeTitle: string;
+  nodeDescription?: string;
+  /** Context from parent nodes */
+  parentContext?: string;
+  /** Specific instruction for expansion */
+  instruction?: string;
+}
+
+export interface ApiError {
+  error: string;
+}

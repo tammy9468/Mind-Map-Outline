@@ -14,3 +14,192 @@ import * as zod from "zod";
 export const HealthCheckResponse = zod.object({
   status: zod.string(),
 });
+
+/**
+ * @summary List all mind maps
+ */
+export const ListMindMapsResponseItem = zod.object({
+  id: zod.string(),
+  title: zod.string(),
+  createdAt: zod.date(),
+  updatedAt: zod.date(),
+});
+export const ListMindMapsResponse = zod.array(ListMindMapsResponseItem);
+
+/**
+ * @summary Create a new mind map
+ */
+export const CreateMindMapBody = zod.object({
+  title: zod.string(),
+  root: zod.object({
+    id: zod.string(),
+    title: zod.string(),
+    description: zod.string().optional(),
+    content: zod
+      .string()
+      .optional()
+      .describe("Rich text content for the detail page"),
+    color: zod.string().optional(),
+    collapsed: zod.boolean().optional(),
+    children: zod.array(zod.unknown()),
+    x: zod.number().optional().describe("X position for mind map layout"),
+    y: zod.number().optional().describe("Y position for mind map layout"),
+  }),
+});
+
+/**
+ * @summary Get a mind map by ID
+ */
+export const GetMindMapParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+export const GetMindMapResponse = zod.object({
+  id: zod.string(),
+  title: zod.string(),
+  root: zod.object({
+    id: zod.string(),
+    title: zod.string(),
+    description: zod.string().optional(),
+    content: zod
+      .string()
+      .optional()
+      .describe("Rich text content for the detail page"),
+    color: zod.string().optional(),
+    collapsed: zod.boolean().optional(),
+    children: zod.array(zod.unknown()),
+    x: zod.number().optional().describe("X position for mind map layout"),
+    y: zod.number().optional().describe("Y position for mind map layout"),
+  }),
+  createdAt: zod.date(),
+  updatedAt: zod.date(),
+});
+
+/**
+ * @summary Update a mind map
+ */
+export const UpdateMindMapParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+export const UpdateMindMapBody = zod.object({
+  title: zod.string().optional(),
+  root: zod
+    .object({
+      id: zod.string(),
+      title: zod.string(),
+      description: zod.string().optional(),
+      content: zod
+        .string()
+        .optional()
+        .describe("Rich text content for the detail page"),
+      color: zod.string().optional(),
+      collapsed: zod.boolean().optional(),
+      children: zod.array(zod.unknown()),
+      x: zod.number().optional().describe("X position for mind map layout"),
+      y: zod.number().optional().describe("Y position for mind map layout"),
+    })
+    .optional(),
+});
+
+export const UpdateMindMapResponse = zod.object({
+  id: zod.string(),
+  title: zod.string(),
+  root: zod.object({
+    id: zod.string(),
+    title: zod.string(),
+    description: zod.string().optional(),
+    content: zod
+      .string()
+      .optional()
+      .describe("Rich text content for the detail page"),
+    color: zod.string().optional(),
+    collapsed: zod.boolean().optional(),
+    children: zod.array(zod.unknown()),
+    x: zod.number().optional().describe("X position for mind map layout"),
+    y: zod.number().optional().describe("Y position for mind map layout"),
+  }),
+  createdAt: zod.date(),
+  updatedAt: zod.date(),
+});
+
+/**
+ * @summary Delete a mind map
+ */
+export const DeleteMindMapParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+/**
+ * @summary Update a specific node in a mind map
+ */
+export const UpdateNodeParams = zod.object({
+  id: zod.coerce.string(),
+  nodeId: zod.coerce.string(),
+});
+
+export const UpdateNodeBody = zod.object({
+  title: zod.string().optional(),
+  description: zod.string().optional(),
+  content: zod.string().optional(),
+  color: zod.string().optional(),
+  collapsed: zod.boolean().optional(),
+});
+
+export const UpdateNodeResponse = zod.object({
+  id: zod.string(),
+  title: zod.string(),
+  description: zod.string().optional(),
+  content: zod
+    .string()
+    .optional()
+    .describe("Rich text content for the detail page"),
+  color: zod.string().optional(),
+  collapsed: zod.boolean().optional(),
+  children: zod.array(zod.unknown()),
+  x: zod.number().optional().describe("X position for mind map layout"),
+  y: zod.number().optional().describe("Y position for mind map layout"),
+});
+
+/**
+ * @summary Generate a mind map structure from user input using AI (SSE stream)
+ */
+export const AiGenerateMindMapBody = zod.object({
+  input: zod
+    .string()
+    .describe("User's raw idea or topic to generate mind map from"),
+  existingRoot: zod
+    .object({
+      id: zod.string(),
+      title: zod.string(),
+      description: zod.string().optional(),
+      content: zod
+        .string()
+        .optional()
+        .describe("Rich text content for the detail page"),
+      color: zod.string().optional(),
+      collapsed: zod.boolean().optional(),
+      children: zod.array(zod.unknown()),
+      x: zod.number().optional().describe("X position for mind map layout"),
+      y: zod.number().optional().describe("Y position for mind map layout"),
+    })
+    .optional()
+    .describe("Existing mind map root to refine (optional)"),
+  instruction: zod
+    .string()
+    .optional()
+    .describe("Additional instruction for AI refinement"),
+});
+
+/**
+ * @summary AI expand a node with more details (SSE stream)
+ */
+export const AiExpandNodeBody = zod.object({
+  nodeTitle: zod.string(),
+  nodeDescription: zod.string().optional(),
+  parentContext: zod.string().optional().describe("Context from parent nodes"),
+  instruction: zod
+    .string()
+    .optional()
+    .describe("Specific instruction for expansion"),
+});

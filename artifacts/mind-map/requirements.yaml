@@ -1,0 +1,19 @@
+packages:
+  "framer-motion": "Smooth layout transitions and animations for the mind map and outline views"
+  "uuid": "Generating unique IDs for new mind map nodes"
+  "@types/uuid": "Types for uuid"
+  "html2canvas": "Exporting the mind map canvas as a PNG image"
+  "react-markdown": "Rendering markdown content in the node detail page"
+  "remark-gfm": "GitHub Flavored Markdown support for tables and tasks"
+  "clsx": "Utility for constructing className strings conditionally"
+  "tailwind-merge": "Utility to cleanly merge tailwind classes without conflicts"
+
+images:
+  - path: "artifacts/mind-map/public/images/empty-state.png"
+    description: "A beautiful, minimalist abstract illustration of connected glowing nodes floating in space, deep indigo and teal color palette, conveying ideas and organization."
+    aspect_ratio: "16:9"
+
+notes:
+  - Implemented custom SVG + HTML overlay for Mind Map Canvas (no external canvas libraries used).
+  - Built custom SSE hook for AI streaming to handle partial data chunks before completion.
+  - Using local state + Context for the active tree to enable instant updates, undo/redo, and debounced saving to API.
