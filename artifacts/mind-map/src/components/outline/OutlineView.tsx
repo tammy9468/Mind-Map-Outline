@@ -14,8 +14,8 @@ export function OutlineView() {
   }
 
   return (
-    <div className="h-full overflow-y-auto p-4 md:p-8 bg-background">
-      <div className="max-w-4xl mx-auto pb-32">
+    <div className="p-4 md:p-8 bg-background">
+      <div className="max-w-4xl mx-auto pb-40">
         <OutlineNode node={root} depth={0} />
       </div>
     </div>

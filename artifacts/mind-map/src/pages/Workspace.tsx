@@ -16,19 +16,15 @@ export default function Workspace() {
   const { data: mindmaps, isLoading } = useListMindMaps();
   const { mutateAsync: createMap } = useCreateMindMap();
 
-  // Load or create initial mind map
   useEffect(() => {
-    if (state.mapId) return; // Already loaded
+    if (state.mapId) return;
 
     const initMap = async () => {
       if (mindmaps && mindmaps.length > 0) {
-        // Just load the first one for simplicity in this demo, 
-        // real app would have a dashboard to select
         const res = await fetch(`/api/mindmaps/${mindmaps[0].id}`);
         const data = await res.json();
         dispatch({ type: 'SET_MAP', payload: data });
       } else if (!isLoading && mindmaps?.length === 0) {
-        // Create new
         try {
           const newRoot = createEmptyRoot();
           const created = await createMap({ data: { title: "My First Idea", root: newRoot } });
@@ -41,12 +37,17 @@ export default function Workspace() {
     initMap();
   }, [mindmaps, isLoading, state.mapId]);
 
+  const isMindMap = view === "mindmap";
+
   return (
-    <div className="flex flex-col h-screen w-full overflow-hidden bg-background">
+    <div className={cn("flex flex-col w-full bg-background", isMindMap ? "h-screen overflow-hidden" : "min-h-screen")}>
       <Header />
-      
-      {/* View Toggle Bar */}
-      <div className="absolute top-20 left-1/2 -translate-x-1/2 z-30 glass-panel rounded-full p-1 flex gap-1 shadow-lg">
+
+      {/* View Toggle Bar — sticky in outline mode, absolute in mindmap mode */}
+      <div className={cn(
+        "left-1/2 -translate-x-1/2 z-30 glass-panel rounded-full p-1 flex gap-1 shadow-lg",
+        isMindMap ? "absolute top-20" : "sticky top-16 mx-auto w-fit mt-3"
+      )}>
         <button
           onClick={() => setView("outline")}
           className={cn(
@@ -68,9 +69,9 @@ export default function Workspace() {
       </div>
 
       {/* Main Content Area */}
-      <main className="flex-1 relative">
+      <main className={cn("relative", isMindMap ? "flex-1" : "")}>
         {isLoading && !state.present ? (
-          <div className="w-full h-full flex items-center justify-center">
+          <div className="w-full h-64 flex items-center justify-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           </div>
         ) : (
