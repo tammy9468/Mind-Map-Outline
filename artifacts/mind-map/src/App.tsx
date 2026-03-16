@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { MindMapProvider } from "@/hooks/use-mindmap-context";
 import Workspace from "@/pages/Workspace";
 import NodeDetail from "@/pages/NodeDetail";
+import Documents from "@/pages/Documents";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
@@ -13,6 +14,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Workspace} />
+      <Route path="/documents" component={Documents} />
       <Route path="/node/:nodeId" component={NodeDetail} />
       <Route component={NotFound} />
     </Switch>

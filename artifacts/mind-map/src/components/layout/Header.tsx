@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "wouter";
-import { BrainCircuit, Download, Moon, Sun, ArrowLeft } from "lucide-react";
+import { BrainCircuit, Download, Moon, Sun, ArrowLeft, Save, FileText } from "lucide-react";
 import { useMindMap } from "@/hooks/use-mindmap-context";
 import { useToast } from "@/hooks/use-toast";
+import { useUpdateMindMap } from "@workspace/api-client-react";
 import html2canvas from "html2canvas";
 
 interface HeaderProps {
@@ -12,6 +13,28 @@ interface HeaderProps {
 export function Header({ isDetail = false }: HeaderProps) {
   const { state, dispatch } = useMindMap();
   const { toast } = useToast();
+  const { mutate: updateMap } = useUpdateMindMap();
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+
+  const handleManualSave = () => {
+    if (!state.mapId || !state.present) return;
+    
+    setSaveStatus('saving');
+    updateMap(
+      { id: state.mapId, data: { title: state.title, root: state.present } },
+      {
+        onSuccess: () => {
+          setSaveStatus('saved');
+          toast({ title: "Mind map saved successfully" });
+          setTimeout(() => setSaveStatus('idle'), 2000);
+        },
+        onError: () => {
+          setSaveStatus('idle');
+          toast({ title: "Failed to save mind map", variant: "destructive" });
+        },
+      }
+    );
+  };
 
   const toggleTheme = () => {
     document.documentElement.classList.toggle('dark');
@@ -57,10 +80,10 @@ export function Header({ isDetail = false }: HeaderProps) {
             <ArrowLeft className="w-5 h-5 text-muted-foreground" />
           </Link>
         ) : (
-          <div className="flex items-center gap-2 text-primary">
+          <Link href="/documents" className="flex items-center gap-2 text-primary hover:opacity-80 transition-opacity">
             <BrainCircuit className="w-6 h-6" />
             <span className="font-display font-bold text-lg hidden sm:block">NeuroMap AI</span>
-          </div>
+          </Link>
         )}
         
         <div className="h-6 w-px bg-border hidden sm:block" />
@@ -81,6 +104,21 @@ export function Header({ isDetail = false }: HeaderProps) {
 
         {!isDetail && (
           <div className="flex gap-2">
+            <button 
+              onClick={handleManualSave}
+              disabled={saveStatus === 'saving'}
+              className={`hidden sm:flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg transition-all ${
+                saveStatus === 'saved' 
+                  ? 'bg-green-500/10 text-green-700 dark:text-green-400 border border-green-500/30'
+                  : saveStatus === 'saving'
+                  ? 'bg-primary/50 text-primary-foreground border border-primary/50 opacity-75'
+                  : 'border border-border hover:bg-muted'
+              }`}
+              title="Save mind map to cloud"
+            >
+              <Save className="w-4 h-4" />
+              {saveStatus === 'saving' ? 'Saving...' : saveStatus === 'saved' ? 'Saved' : 'Save'}
+            </button>
             <button onClick={handleExportJson} className="hidden sm:flex items-center gap-2 px-3 py-1.5 text-sm font-medium border border-border rounded-lg hover:bg-muted transition-colors">
               <Download className="w-4 h-4" /> JSON
             </button>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import { Header } from "@/components/layout/Header";
 import { OutlineView } from "@/components/outline/OutlineView";
 import { MindMapCanvas } from "@/components/mindmap/MindMapCanvas";
@@ -12,15 +13,42 @@ type ViewMode = "outline" | "mindmap";
 
 export default function Workspace() {
   const [view, setView] = useState<ViewMode>("outline");
+  const [location] = useLocation();
   const { state, dispatch, createEmptyRoot } = useMindMap();
   const { data: mindmaps, isLoading } = useListMindMaps();
   const { mutateAsync: createMap } = useCreateMindMap();
+
+  // Extract ID from query parameter
+  const getMapIdFromUrl = (): string | null => {
+    const params = new URLSearchParams(location.split('?')[1] || '');
+    return params.get('id');
+  };
 
   useEffect(() => {
     if (state.mapId) return;
 
     const initMap = async () => {
-      if (mindmaps && mindmaps.length > 0) {
+      const urlMapId = getMapIdFromUrl();
+      
+      if (urlMapId) {
+        // Load specific mind map from URL
+        try {
+          const res = await fetch(`/api/mindmaps/${urlMapId}`);
+          if (res.ok) {
+            const data = await res.json();
+            dispatch({ type: 'SET_MAP', payload: data });
+          } else {
+            // If ID not found, load first or create new
+            if (mindmaps && mindmaps.length > 0) {
+              const res = await fetch(`/api/mindmaps/${mindmaps[0].id}`);
+              const data = await res.json();
+              dispatch({ type: 'SET_MAP', payload: data });
+            }
+          }
+        } catch (e) {
+          console.error("Failed to load mind map", e);
+        }
+      } else if (mindmaps && mindmaps.length > 0) {
         const res = await fetch(`/api/mindmaps/${mindmaps[0].id}`);
         const data = await res.json();
         dispatch({ type: 'SET_MAP', payload: data });
@@ -35,7 +63,7 @@ export default function Workspace() {
       }
     };
     initMap();
-  }, [mindmaps, isLoading, state.mapId]);
+  }, [mindmaps, isLoading, state.mapId, location]);
 
   const isMindMap = view === "mindmap";
 
