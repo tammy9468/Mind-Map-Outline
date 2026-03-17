@@ -3,7 +3,7 @@ import { MindMapNode } from "@workspace/api-client-react";
 import { useMindMap } from "@/hooks/use-mindmap-context";
 import { generateColorsForDepth } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { Maximize2, ZoomIn, ZoomOut, Target, Plus } from "lucide-react";
+import { Maximize2, ZoomIn, ZoomOut, Target, Plus, FileText } from "lucide-react";
 import { Link } from "wouter";
 
 interface CanvasState {
@@ -167,6 +167,12 @@ export function MindMapCanvas() {
             </div>
             {node.description && (
               <p className="text-xs text-muted-foreground truncate">{node.description}</p>
+            )}
+            {node.content && node.content !== "<p></p>" && (
+              <div className="flex items-center gap-1 mt-1 text-[10px] text-primary/70 font-medium">
+                <FileText className="w-2.5 h-2.5" />
+                <span>Rich Content</span>
+              </div>
             )}
             
             {/* Node Controls */}

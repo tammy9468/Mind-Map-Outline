@@ -128,9 +128,9 @@ export function OutlineNode({ node, depth }: OutlineNodeProps) {
               {node.description}
             </p>
           )}
-          {node.content && !node.description && (
-            <p className="text-xs text-muted-foreground/60 mt-0.5 ml-4 flex items-center gap-1">
-              <FileText className="w-3 h-3" /> Has detailed content
+          {node.content && node.content !== "<p></p>" && (
+            <p className="text-xs text-primary/70 mt-0.5 ml-4 flex items-center gap-1 font-medium">
+              <FileText className="w-3 h-3" /> Rich content available
             </p>
           )}
         </div>

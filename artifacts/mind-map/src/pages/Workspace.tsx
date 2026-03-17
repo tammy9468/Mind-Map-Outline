@@ -3,13 +3,14 @@ import { useLocation } from "wouter";
 import { Header } from "@/components/layout/Header";
 import { OutlineView } from "@/components/outline/OutlineView";
 import { MindMapCanvas } from "@/components/mindmap/MindMapCanvas";
+import { WordView } from "@/components/word/WordView";
 import { AiInputPanel } from "@/components/ai/AiInputPanel";
 import { useMindMap } from "@/hooks/use-mindmap-context";
 import { useCreateMindMap, useListMindMaps } from "@workspace/api-client-react";
-import { ListTree, Network } from "lucide-react";
+import { ListTree, Network, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type ViewMode = "outline" | "mindmap";
+type ViewMode = "outline" | "mindmap" | "word";
 
 export default function Workspace() {
   const [view, setView] = useState<ViewMode>("outline");
@@ -71,7 +72,7 @@ export default function Workspace() {
     <div className={cn("flex flex-col w-full bg-background", isMindMap ? "h-screen overflow-hidden" : "min-h-screen")}>
       <Header />
 
-      {/* View Toggle Bar — sticky in outline mode, absolute in mindmap mode */}
+      {/* View Toggle Bar — sticky in outline/word mode, absolute in mindmap mode */}
       <div className={cn(
         "left-1/2 -translate-x-1/2 z-30 glass-panel rounded-full p-1 flex gap-1 shadow-lg",
         isMindMap ? "absolute top-20" : "sticky top-16 mx-auto w-fit mt-3"
@@ -94,6 +95,15 @@ export default function Workspace() {
         >
           <Network className="w-4 h-4" /> Mind Map
         </button>
+        <button
+          onClick={() => setView("word")}
+          className={cn(
+            "flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300",
+            view === "word" ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:text-foreground hover:bg-muted"
+          )}
+        >
+          <FileText className="w-4 h-4" /> Word
+        </button>
       </div>
 
       {/* Main Content Area */}
@@ -104,7 +114,7 @@ export default function Workspace() {
           </div>
         ) : (
           <>
-            {view === "outline" ? <OutlineView /> : <MindMapCanvas />}
+            {view === "outline" ? <OutlineView /> : view === "mindmap" ? <MindMapCanvas /> : <WordView />}
             <AiInputPanel />
           </>
         )}

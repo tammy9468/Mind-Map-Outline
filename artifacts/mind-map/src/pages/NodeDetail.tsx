@@ -4,8 +4,7 @@ import { Header } from "@/components/layout/Header";
 import { useMindMap } from "@/hooks/use-mindmap-context";
 import { findNode } from "@/lib/utils";
 import { Sparkles, Check, X, FileText } from "lucide-react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { useAiStream } from "@/hooks/use-ai-stream";
 
 export default function NodeDetail() {
@@ -53,7 +52,9 @@ export default function NodeDetail() {
     });
 
     if (newContent) {
-      setContent(prev => prev + (prev ? "\n\n" : "") + newContent);
+      // For AI content, we might want to wrap it in a paragraph if it's not already HTML
+      const formattedContent = newContent.startsWith('<') ? newContent : `<p>${newContent}</p>`;
+      setContent(prev => prev + formattedContent);
     }
   };
 
@@ -127,33 +128,23 @@ export default function NodeDetail() {
               )}
             </div>
 
-            {isEditing || isStreaming ? (
-              <div className="relative">
-                <textarea
-                  value={content + (isStreaming ? partialText : "")}
-                  onChange={e => setContent(e.target.value)}
-                  className="w-full min-h-[400px] p-6 bg-card border-2 border-border rounded-2xl focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all font-mono text-sm leading-relaxed resize-y"
-                  placeholder="Start writing using Markdown..."
-                />
-                {isStreaming && (
-                  <div className="absolute bottom-4 right-4 flex items-center gap-2 text-primary bg-background/80 backdrop-blur px-3 py-1.5 rounded-full shadow-sm border border-primary/20">
-                    <Sparkles className="w-4 h-4 animate-pulse" />
-                    <span className="text-sm font-medium animate-pulse">AI is writing...</span>
-                  </div>
+            <div className="relative">
+              <RichTextEditor
+                content={content + (isStreaming ? partialText : "")}
+                onChange={setContent}
+                editable={isEditing}
+                className={cn(
+                  "min-h-[400px]",
+                  !isEditing && "border-border/50 shadow-none"
                 )}
-              </div>
-            ) : (
-              <div className="prose prose-slate dark:prose-invert max-w-none p-6 bg-card border border-border/50 rounded-2xl shadow-sm min-h-[200px]">
-                {content ? (
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
-                ) : (
-                  <div className="h-full flex flex-col items-center justify-center text-muted-foreground opacity-50 py-12">
-                    <FileText className="w-12 h-12 mb-4" />
-                    <p>No content yet. Click Edit or use AI to generate.</p>
-                  </div>
-                )}
-              </div>
-            )}
+              />
+              {isStreaming && (
+                <div className="absolute bottom-4 right-4 flex items-center gap-2 text-primary bg-background/80 backdrop-blur px-3 py-1.5 rounded-full shadow-sm border border-primary/20">
+                  <Sparkles className="w-4 h-4 animate-pulse" />
+                  <span className="text-sm font-medium animate-pulse">AI is writing...</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </main>
